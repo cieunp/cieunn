@@ -1,6 +1,5 @@
 import streamlit as st
 
-# 수학 관련 작품 데이터
 math_works = [
     {"title": "A Beautiful Mind", "type": "영화", "genre": "드라마", "topic": "수학자 전기"},
     {"title": "The Imitation Game", "type": "영화", "genre": "역사 드라마", "topic": "암호학"},
@@ -22,17 +21,24 @@ def recommend_math_works(works, preferred_type=None, topic_keyword=None):
         recommendations.append(work["title"])
     return recommendations
 
-# 스트림릿 UI
 st.title("수학 관련 영화 & 책 추천")
 
 preferred_type = st.selectbox("선호하는 형태를 선택하세요:", options=["영화", "책"])
 topic_keyword = st.text_input("관심 있는 수학 주제 (예: 전기, 암호학, 교육, 기하학 등)")
 
+if "recommendations" not in st.session_state:
+    st.session_state.recommendations = []
+
 if st.button("추천 받기"):
-    results = recommend_math_works(math_works, preferred_type=preferred_type, topic_keyword=topic_keyword.strip())
-    if results:
-        st.write("### 추천 작품:")
-        for title in results:
-            st.write(f"- {title}")
-    else:
-        st.write("조건에 맞는 추천 작품이 없습니다. 다른 키워드를 입력해 보세요.")
+    st.session_state.recommendations = recommend_math_works(
+        math_works,
+        preferred_type=preferred_type,
+        topic_keyword=topic_keyword.strip()
+    )
+
+if st.session_state.recommendations:
+    st.write("### 추천 작품:")
+    for title in st.session_state.recommendations:
+        st.write(f"- {title}")
+else:
+    st.write("조건에 맞는 추천 작품이 없습니다. 다른 키워드를 입력해 보세요.")
